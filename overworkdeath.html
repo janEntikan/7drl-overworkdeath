@@ -1,0 +1,238 @@
+Overwork Death
+(1985's The Tower - The Roguelike)
+By Team Momojo  http://momojo.itch.io
+For 7drl 2019 https://itch.io/jam/7drl-challenge-2019
+2019, March 1 to March 8
+
+Credits/Roles
+
+(please pick roles here if you plan on helping out so I know how hard to work)
+
+| Design/Graphics/Programming/Writing/Sound/Music/Team management (if there is one) | momojohobo |
+| --------------------------------------------------------------------------------- | ---------- |
+|                                                                                   |            |
+|                                                                                   |            |
+
+Plot
+
+You are a salary-man working on a very high floor in a highly advanced office-building, who's automated computer systems seemed to have gone postal on your colleagues. You need to escape the building, floor by floor, fighting off hoards of security drones, a group of terrorists and even otherworldly beings. How high even is this building and what is left of the world once you get out?
+
+Technicalities
+  - Using Git Version control, pushing to GitHub.
+  - Game-logic will be written entirely in python with Panda3d using classes where possible.
+  - Game-board will be a 32x32 grid of lists  (so 32 lists with 32 lists of lists) filled with tile_class.
+  - The “node” part of a tile-class is the only panda3d related part of these classes preferably.
+  - Each model is only loaded once.
+  - Graphics, low-poly,  made in Blender, exported as an Egg-file.
+    - worst case, draw images using the line-tool in ms-paint, single color
+      for hobo to trace them in blender
+  - String tables of story/logs, descriptions, etc.  as spreadsheet saved as .CSV like so:
+
+| some_catagory_name           |                                                                             |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| unique_name_of_string_coffee | This is the actual string as description of an item. Hmm! Tasty coffee!     |
+| another_unique_ID_log124     | This is some string which is story told through a log or whatever. Help me! |
+| termos_description           | A sturdy, vacuum sealed thermos. Who even knows what’s inside?              |
+
+  - Music rendered using soundfonts and therefore can be any midi-file, exported as .OGG.
+  - Sound-fx probably using simple FM-synthesizers, exported as .WAV.
+Graphics
+  - first person dungeoncrawler-esque rogue-like
+  - wire-frame characters for text
+  - wire-frame 3d surroundings
+  - line-tool/vector billboard enemies/creatures
+  - fluid movement/instant input response (unlike some roguelikes)
+Gameplay
+Basic movement
+    Left and right to turn. Down to turn 180 degrees.
+    Up to go forward or melee-attack if way is blocked by creature, this ends a turn.
+Other actions (ends turn)
+  -     (>/<) Go up/down (stairs/elevator)
+  -     (C)onsume (item/drink/food)
+  -     (T)hrow (item/weapon)
+  -     (D)rop (item/weapon)
+  -     (F)ire (weapon/weapon)
+  -     (G)rab (item/weapon)
+  -     (O)pen (door, dresser, closet, chest)
+  -     (K)ick (door, enemy)
+  -     (S)earch (surrounding tiles for hidden items and doors)
+Menu controls
+  - (I)nventory
+  - (F1/? ) List of actions/controls
+  - (Esc) Open main menu
+  Main menu:
+    - (N)ew game
+    - (S)ave or (C)ontinue
+    - (M)usic vol (3/9)  (asks for digit)
+    - (A)udio  vol (5/9) (asks for digit)
+    - (Q)uit
+    
+Player stats
+  - hp, hunger, thirst, xp, lvl
+  - strength  (+ to atk)
+  - endurance (+ to hp)
+  - intellect (allows weapons, 1=scissors, 10=automatic rifle, 15=alien weapons)
+Player classes
+  - Manager (stapler, needs coffee, gains faster  xp)
+  - Accountant (letteropener,
+  - Sales (suitcase, 
+  - IT-department (damage multiplier to drones, screwdriver)
+  - Copy-guy/gal (+strength, boxcutter)
+  - Receptionist (10 throwing-pens and scissors)
+  - Janitor (+endurance, broom )
+Objects
+
+Objects are represented as very low-poly 3d models.
+
+Obstructions
+  - Wall -
+  - Window -
+  - Door (open? stuck? locked?) -
+  - Cubicle/Stall -
+  - Desk/Table -
+Interactive Wall Orn
+  - Motivational poster (random motivational parody)
+  - Softdrink machine (+drink)
+  - Snack machine (+food)
+  - Hot drinks dispenser (+drink, fill thermo?) 
+  - Water cooler (-thirst)
+  - Terminal (story told through logs?)
+Wall Orn (to do last, in order of importance)
+  - Plant
+  - Chair
+  - Dead body
+  - Tree
+  - Painting
+  - Blood stains
+  - Bench
+  - Fire extinguisher
+  - Body parts/Gore
+Ceiling Orn (to do last, in order of importance)
+  - Exit/Directional Sign   -
+  - Light -
+  - Security camera -
+Items
+Drinks 
+  -thirst, throw 1 (random temporary stat increase)
+  - Softdrink (Cola, Orange, Lemon) 3
+  - Thermos (Coffee, tea or chocolate) 1
+Foods
+  -hunger, hp + 2, throw 1
+  - Nuts 4
+  - Raisins 3
+  - Cookie 2
+  - Chips 1
+  - Candybar 1
+Weapons
+  - Consuming weapons uses them on self. Inflict damage to self.
+  - Throw damage of melee weapons is 2x
+  - Throw damage of ranged is half
+
+
+  Normal
+  - throwing-pen 1 (cannot be equipped)
+  - Letteropener/Screwdriver/Scissors/Suitcase 1
+  - Staple-gun (ranged) 2
+  - Boxcutter/Hammer/Broom 3
+  - Papercutter (blade of) 5
+  - Makeshift Flamethrower (ranged) 4 
+  - Nailgun (ranged) 5
+  
+  Dropped by terrorist/swat (add last if at all)
+  - Handgun (ranged) 6
+  - Shotgun (ranged) 7
+  - Automatic (ranged) 8
+Enemies
+  come in light, med and heavy types
+  - Idle at a "home" tile.
+  - If player is spotted and enemy has ranged weapon, fire.
+  - Else move towards player.
+  - If player is out of sight, move to where player was last seen.
+  - If at last spotted tile and player is not spotted anymore, take a random guess.
+  - If player is still not spotted, go back "home".
+Types (in order of both appearance and importance)
+  - Crazy office-worker 2hp (popcorn)
+  - Maintenance Bot 3hp
+  - Security Drone (ranged) 4hp
+  - Ceiling Turret (ranged) 5hp (doesn't move)
+  - Terrorist (ranged) 6hp
+  - Swat (ranged) 7hp
+  - Alien demon 8hp
+Map generation
+At least
+  Preheat oven at 220 degrees.
+  - Divide map into 9 parts.
+  - In each part, carve out a randomly sized room, at least 3 tiles smaller then the part.
+  - Connect the rooms randomly with hallways.
+  - With the rest of the tiles, run simple maze generation, connecting to rooms and hallways randomly.
+  - At dead ends add doors and keys.
+  - In each room place furniture and wall orns.
+  - In hallways add wall and ceiling orns.
+  - Sprinkle with enemies.
+  - Each room a simple maze of cubicles.
+  Let it rest and harden in the fridge for 3 hours.
+If time permits
+  Lobby algorithms every 3 floors?
+  Cantine/Leisure floors?
+Audio
+  Music written in florestan or opl3?
+  Sound fx should be simple noise and oscilations type affair. Perhaps FM?
+Sounds
+  - Player step (tick/plonk)
+  - Enemy step (lower tick/plonk)
+  - Melee hit (thonk! slash!)
+  - Ranged hit (pew!)
+  - Enemy death (perhaps multiple or one per type?)
+  - Stairs (step step step, lower in pitch each time)
+  - Elevator (DING!)
+  - Consume sound (gulp!)
+  - Wield (click-click)
+  Probably a lot more.
+
+
+Music
+  - Menu music
+  - Level music (one song looping in different intensities again? else about 3 songs)
+  - End level music (short chill elevator music loop?)
+  - Game-over/End credits song
+  
+Programming Roadmap
+Title | Dates | Assigned to | Description
+--- | --- | --- | ---
+Basic map gen<br> | Mar 1, 2019 - Mar 1, 2019 |  | <br>  Just rooms, halls and item spawnpoints (think original rogue). Develop in overhead, use as mapscreen<br><br>
+interactive props<br> | Mar 5, 2019 - Mar 5, 2019 |  | Search, open, kick<br>
+Expand map gen<br> | Mar 6, 2019 - Mar 6, 2019 |  | 
+Add created Orns<br> | Mar 7, 2019 - Mar 7, 2019 |  | 
+Menu<br> | Mar 4, 2019 - Mar 4, 2019 |  | 
+actor stats<br> | Mar 3, 2019 - Mar 3, 2019 |  | 
+Textfont to screen<br> | Mar 2, 2019 - Mar 2, 2019 |  | 
+3d representation of map thus far<br> | Mar 1, 2019 - Mar 1, 2019 |  | 
+Add more enemy types<br> | Mar 5, 2019 - Mar 5, 2019 |  | 
+DEBUGGING!<br> | Mar 7, 2019 - Mar 7, 2019 |  | 
+DEBUGGING!<br> | Mar 6, 2019 - Mar 6, 2019 |  | 
+Ranged combat<br> | Mar 4, 2019 - Mar 4, 2019 |  | 
+Inventory/Items<br> | Mar 3, 2019 - Mar 3, 2019 |  | drop, take, use, eat, quaff, wield, etc.<br>
+Console messages<br> | Mar 2, 2019 - Mar 2, 2019 |  | You drink the soda<br>
+Stairs down<br> | Mar 1, 2019 - Mar 1, 2019 |  | 
+More items<br> | Mar 4, 2019 - Mar 4, 2019 |  | 
+Melee combat<br> | Mar 3, 2019 - Mar 3, 2019 |  | Player and enemy. Develop with Security Drone type enemy.<br>
+Player&Enemy movement<br> | Mar 2, 2019 - Mar 2, 2019 |  | 
+Asset Roadmap
+Title | Dates | Assigned to | Description
+--- | --- | --- | ---
+Interactive Orns<br> | Mar 4, 2019 - Mar 4, 2019 |  | 
+Wall/Ceiling Orns<br> | Mar 6, 2019 - Mar 6, 2019 |  | 
+Missing stuff?<br> | Mar 7, 2019 - Mar 7, 2019 |  | 
+More enemies<br> | Mar 5, 2019 - Mar 5, 2019 |  | 
+Obstructions<br> | Mar 1, 2019 - Mar 1, 2019 |  | 
+Exciting song<br> | Mar 2, 2019 - Mar 2, 2019 |  | 
+String tables<br> | Mar 3, 2019 - Mar 3, 2019 |  | Descriptions of items, weapons, whatever.<br>Story elements.<br>
+Theme song<br> | Mar 3, 2019 - Mar 3, 2019 |  | 
+Item graphics<br> | Mar 2, 2019 - Mar 2, 2019 |  | <br><br>
+A few enemies<br> | Mar 1, 2019 - Mar 1, 2019 |  | 
+Even more exciting song<br> | Mar 4, 2019 - Mar 4, 2019 |  | 
+Game over/end credits song<br> | Mar 5, 2019 - Mar 5, 2019 |  | 
+Sound fx 1/2<br> | Mar 1, 2019 - Mar 3, 2019 |  | 
+Sound fx 2/2<br> | Mar 4, 2019 - Mar 6, 2019 |  | 
+  
+
