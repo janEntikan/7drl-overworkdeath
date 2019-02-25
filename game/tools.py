@@ -1,6 +1,14 @@
 from math import hypot, sin, cos, radians
 from panda3d.core import Vec3, Point3
 
+def makeInstance(name, instance_model, pos=(0,0,0), hpr=(0,0,0), scale=(1,1,1)):
+	instance = NodePath(name)
+	instance_model.instanceTo(instance)
+	instance.setPos(pos)
+	instance.setHpr(hpr)
+	instance.setScale(scale)
+	return instance
+
 def fireRay(fromObject, toObject):
 	pFrom = render.getRelativePoint(fromObject, Point3())
 	pTo = render.getRelativePoint(toObject, Point3())
@@ -73,7 +81,11 @@ def grid2(size=[1,1],default=None):
 	for y in range(h):
 		grid.append([])
 		for x in range(w):
-			grid[y].append(default)
+			try:
+				t = default()
+			except:
+				t = default
+			grid[y].append(t)
 	return grid
 
 def grid3(size=[1,1,1],default=None):

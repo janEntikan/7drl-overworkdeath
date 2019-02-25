@@ -33,10 +33,7 @@ class Map():
             self.grid.append([])
             for x in range(self.size):
                 self.grid[y].append(Tile(self, x ,y))
-
-
         #TODO: ADD WALLS, DOORS AND OBJECTS TO TILES, THEN CALCULATE PREFABS
-
         self.build_map_model()
 
     def build_map_model(self):

@@ -1,10 +1,9 @@
 import sys
 import os
-cats = ["wire", "fonts"]
 
 
 def do(cat, folder):
-    filename = cat+"/" + folder+"/"+folder+".egg"
+    filename = "data/models/egg/" + cat+"/" + folder+"/"+folder+".egg"
     print("doing " + filename)
     filename_wire = filename[:-4]+"_wire.egg"
     filename_model = filename[:-4]+"_model.egg"
@@ -57,6 +56,8 @@ def do(cat, folder):
     wirefile.close()
     modelfile.close()
 
+cats = ["font_deago", "font_toompoost", "parts"]
+print("wireframifying! thx!")
 for cat in cats:
     folders = os.listdir(cat)
     for folder in folders:
