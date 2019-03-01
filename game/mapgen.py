@@ -1,31 +1,7 @@
 from random import randint, choice
 
-class Tile():
-    def __init__(self, c="#"):
-        self.c = c
-
-class Map():
-    def __init__(self, size=32):
-        self.grid = []
-        #make it
-        for y in range(size):
-            self.grid.append([])
-            for x in range(size):
-                self.grid[y].append([])
-                self.grid[y][x].append(Tile())
-        self.grid = classic_rogue(self.grid)
-        self.grid = simple_maze(self.grid)
-        self.print()
-
-    def print(self):
-        for y, row in enumerate(self.grid):
-            s = ""
-            for x in row:
-                s += x[0].c
-            print(s)
-
 # classic rogue mapgen
-def classic_rogue(grid):
+def classicRogue(grid):
     size = len(grid)
     part = int(size/3)
     min = 4
@@ -38,15 +14,53 @@ def classic_rogue(grid):
             x = randint(2, (part - w)) + (gx*part)-1
             y = randint(2, (part - h)) + (gy*part)-1
             rooms.append([x-(x%2)+1,y-(y%2)+1,w-(w%2)-1,h-(h%2)-1])
-    for room in rooms:
+    for r, room in enumerate(rooms):
+        door = False
         for y in range(room[3]):
             for x in range(room[2]):
-                grid[room[1]+y][room[0]+x][0].c = "+"
-    #TODO: connect rooms?
+                grid[room[1]+y][room[0]+x].c = "+"
+        # add a door to room
+        sides = ["rd", "lrd", "ld", "urd", "urdl", "uld", "ur", "ulr", "ul"]
+        s = sides[r]
+        rs = choice(s)
+        if rs == "u":
+            x = (int(randint(1,room[2]-2)/2)*2)+1
+            y = 0
+            grid[y+room[1]-1][x+room[0]].c = "="
+            grid[y+room[1]-2][x+room[0]].c = "."
+        elif rs == "d":
+            x = (int(randint(1,room[2]-2)/2)*2)+1
+            y = 0
+            grid[y+room[1]+room[3]][x+room[0]].c = "="
+            grid[y+room[1]+room[3]+1][x+room[0]].c = "."
+        if rs == "l":
+            x = 0
+            y = (int(randint(1,room[3]-2)/2)*2)+1
+            grid[y+room[1]][x+room[0]-1].c = "="
+            grid[y+room[1]][x+room[0]-2].c = "."
+        elif rs == "r":
+            x = 0
+            y = (int(randint(1,room[3]-2)/2)*2)+1
+            grid[y+room[1]][x+room[0]+room[2]].c = "="
+            grid[y+room[1]][x+room[0]+room[2]+1].c = "."
+
+    # add stairs down to a random room
+    room = choice(rooms)
+    x = randint(room[0]+1, room[0]+room[2]-2)
+    y = randint(room[1]+1, room[1]+room[3]-2)
+    grid[y][x].c = "<"
+    print("down", room, x, y)
+
+    room = choice(rooms)
+    x = randint(room[0]+1, room[0]+room[2]-2)
+    y = randint(room[1]+1, room[1]+room[3]-2)
+    grid[y][x].c = ">"
+    print("up", room, x, y)
+
     return grid
 
 #braided recursive backtracking maze
-def simple_maze(grid, start=[1,1], steps=2, braids=4):
+def simpleMaze(grid, start=[1,1], steps=2, braids=4):
     size = len(grid)
     direction = 3 #0123 - NESW
     directions = [[0,-1], [1,0], [0,1], [-1,0]]
@@ -66,8 +80,8 @@ def simple_maze(grid, start=[1,1], steps=2, braids=4):
             ]
             cant = False
             try:
-                tile_a = grid[next_tiles[1]][next_tiles[0]][0]
-                tile_b = grid[next_tiles[3]][next_tiles[2]][0]
+                tile_a = grid[next_tiles[1]][next_tiles[0]]
+                tile_b = grid[next_tiles[3]][next_tiles[2]]
                 if tile_a.c == "#" and tile_b.c == "#":
                     tile_a.c = "."
                     tile_b.c = "."
@@ -99,4 +113,12 @@ def simple_maze(grid, start=[1,1], steps=2, braids=4):
         else:
             return grid
 
-map = Map()
+def closeUpAndCrop(grid):
+    s = len(grid)
+    for y in range(s):
+        for x in range(s):
+            if y == 0 or x == 0 or y >= s-2 or x >= s-2:
+                grid[y][x].c = "W"
+        grid[y] = grid[y][:-1]
+    grid = grid[:-1]
+    return grid

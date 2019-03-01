@@ -6,7 +6,7 @@ class Cam():
     def __init__(self, x, y, angle):
         base.camLens.setFov(90)
         base.camNode.setCameraMask(BitMask32.bit(0))
-        base.camLens.setFar(32)
+        base.camLens.setFar(10)
         base.camLens.setNear(0.01)
         self.node = render.attachNewNode("placement")
         self.camNode = self.node.attachNewNode("cam")
@@ -16,8 +16,8 @@ class Cam():
         self.node.set_pos(x+0.5,y+0.5,0.2)
 
     def update(self, place):
-        self.node.set_hpr(place[2]*90,0,0)
-        self.node.set_pos(place[0],place[1],0.2)
+        self.node.set_hpr((place[2]*90)+180,0,0)
+        self.node.set_pos(-place[0],-place[1],0.2)
 
 class Player():
     def __init__(self, x, y, angle):
@@ -55,7 +55,7 @@ class Player():
             print(mx, my)
 
         #hittesting
-        if destination.move_cost == 1:
+        if destination.c == "." or destination.c == "+" or destination.c == "=":
             move = True
             if move:
                 #increment movement

@@ -2,14 +2,7 @@ from panda3d.core import RenderModeAttrib, Material, ColorAttrib, NodePath
 from panda3d.bullet import BulletTriangleMesh, BulletTriangleMeshShape, BulletBoxShape
 from .tools import makeInstance
 
-def loadShapes(loader):
-    data = {}
-    data["shapes"] = {}
-    shape_model = loader.loadModel("data/shapes.egg")
-    shapes = shape_model.findAllMatches('**/+GeomNode')
-    for shape in shapes: data["shapes"][shape.get_name()] = shape
-
-def wire(root, folder, color=None):
+def wire(folder, color=None):
     w = loader.loadModel(folder + "_wire.egg")
     for child in w.getChildren():
         m = child.findMaterial("*")
@@ -22,28 +15,20 @@ def wire(root, folder, color=None):
                 c = (1,1,1,1)
             else:
                 c = color
-        child.node().setAttrib(RenderModeAttrib.make(root.line[0], root.line[1], False, c))
+        child.node().setAttrib(RenderModeAttrib.make(1, 4, False, c))
     m = loader.loadModel(folder + "_model.egg")
-    m.flattenStrong()
     return w, m
 
-def loadWire(root, folder, color=None):
-    w, m = wire(root, folder, color)
-    return w,m
-
-def nodesToModel(instance_name, node_model, instance_model):
-    nodepath = NodePath(instance_name + "_root")
-    for c, child in enumerate(node_model.getChildren()):
-        pos = child.getPos()
-        hpr = child.getHpr()
-        scale = child.getScale()
-        i = makeInstance(
-            instance_name + "_" +  str(c) + "_wire",
-            instance_model[0], pos, hpr, scale)
-        i.reparentTo(nodepath)
-        i = makeInstance(
-            instance_name + "_" +  str(c) + "_model",
-            instance_model[1], pos, hpr, scale)
-        i.reparentTo(nodepath)
-    nodepath.flattenStrong()
-    return nodepath
+def getParts(folder):
+    objects = {}
+    parts = wire(folder)
+    parts_wire = parts[0].findAllMatches('**/+GeomNode')
+    parts_model = parts[1].findAllMatches('**/+GeomNode')
+    #print(parts_wire)
+    for w, wireframe in enumerate(parts_wire):
+        parts_wire[w].setPos(0,0,0)
+        parts_model[w].setPos(0,0,0)
+        parts_wire[w].flattenStrong()
+        parts_model[w].flattenStrong()
+        objects[wireframe.get_name()] = parts_wire[w], parts_model[w]
+    return objects

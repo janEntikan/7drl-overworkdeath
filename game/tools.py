@@ -1,9 +1,10 @@
 from math import hypot, sin, cos, radians
-from panda3d.core import Vec3, Point3
+from panda3d.core import Vec3, Point3, NodePath
 
 def makeInstance(name, instance_model, pos=(0,0,0), hpr=(0,0,0), scale=(1,1,1)):
 	instance = NodePath(name)
-	instance_model.instanceTo(instance)
+	instance_model[0].instanceTo(instance)
+	instance_model[1].instanceTo(instance)
 	instance.setPos(pos)
 	instance.setHpr(hpr)
 	instance.setScale(scale)

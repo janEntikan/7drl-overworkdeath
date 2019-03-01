@@ -1,10 +1,9 @@
 import sys
 import os
 
-
-def do(cat, folder):
-    filename = "data/models/egg/" + cat+"/" + folder+"/"+folder+".egg"
-    print("doing " + filename)
+def make_wireframe(folder):
+    filename = "data/models/egg/" + folder+"/"+folder+".egg"
+    print("wireframifying " + filename)
     filename_wire = filename[:-4]+"_wire.egg"
     filename_model = filename[:-4]+"_model.egg"
     eggfile = open(filename, "r")
@@ -55,10 +54,3 @@ def do(cat, folder):
     eggfile.close()
     wirefile.close()
     modelfile.close()
-
-cats = ["font_deago", "font_toompoost", "parts"]
-print("wireframifying! thx!")
-for cat in cats:
-    folders = os.listdir(cat)
-    for folder in folders:
-        do(cat, folder)
