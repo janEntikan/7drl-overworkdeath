@@ -1,7 +1,6 @@
 from panda3d.core import BitMask32
 from .stats import Statset
 
-
 class Cam():
     def __init__(self, x, y, angle):
         base.camLens.setFov(90)
@@ -27,6 +26,7 @@ class Player():
         self.place = [x,y,angle]
         self.prev_place = self.place[:]
         self.stats = Statset()
+        self.pos = self.place[0], self.place[1]
 
     def update(self):
         self.camera.update(self.place)
@@ -49,13 +49,17 @@ class Player():
         current = game.map.grid[int(y)][int(x)]
         mx = int(x+s[0])
         my = int(y+s[1])
+        enemythere = False
+        for enemy in game.map.enemies:
+            if enemy.pos[0] == mx and enemy.pos[1] == my:
+                return 1
+        self.pos = mx, my
         try:
-            destination = game.map.grid[my][mx]
+            dest = game.map.grid[my][mx]
         except:
             print(mx, my)
-
         #hittesting
-        if destination.c == "." or destination.c == "+" or destination.c == "=":
+        if dest.c == "." or dest.c == "+" or dest.c == "=":
             move = True
             if move:
                 #increment movement
@@ -71,4 +75,4 @@ class Player():
             else:
                 return 1
         else:
-            return 1
+            return "die"

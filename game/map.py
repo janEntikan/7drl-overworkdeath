@@ -3,32 +3,27 @@ from panda3d.core import NodePath
 from .tools import makeInstance
 from .mapgen import classicRogue, simpleMaze, closeUpAndCrop
 from .data import getParts
+from .ai import Enemy
 
 class Tile():
-	def __init__(self, c="#"):
+	def __init__(self, x, y, c="#"):
 		self.c = c
+		self.place = x,y
 		self.node = None
-
-class Enemy():
-	def __init__(self, model, pos=[0,0]):
-		self.pos = pos
-		self.model = model
-
-	def load(self, models):
-		self.node = makeInstance(self.model, models[self.model])
-		self.node.setPos(-self.pos[0], -self.pos[1], 0)
+		self.neighbors = []
 
 class Map():
 	def __init__(self, size=32):
 		self.size = size
-		self.seed = randint(0, 1200)
+		self.seed = randint(0, 120000000000000)
+		self.start = (0,0)
+		self.end = (0,0)
 		self.grid = []
 		self.enemies = []
 		self.node = render.attachNewNode("map")
 		self.loadParts()
 		self.generate()
 		self.buildMapModel()
-
 
 	def loadParts(self):
 		self.parts = getParts("data/models/egg/parts/parts")
@@ -39,12 +34,29 @@ class Map():
 		for y in range(self.size):
 			self.grid.append([])
 			for x in range(self.size):
-				self.grid[y].append(Tile())
-		self.grid = classicRogue(self.grid)
+				self.grid[y].append(Tile(x, y))
+		self.grid, self.start, self.end = classicRogue(self.grid)
 		self.grid = simpleMaze(self.grid)
 		self.grid = closeUpAndCrop(self.grid)
-		self.sprinkleEnemies(32)
+		self.setNeighors()
+
+		self.sprinkleEnemies(16)
 		self.printMap()
+
+	def setNeighors(self):
+		dirs = [
+			[0,-1], [1,0], [0,1], [-1,0]
+		]
+		solids = "#W><"
+		for y, row in enumerate(self.grid):
+			for x, tile in enumerate(row):
+				for dir in dirs:
+					try:
+						n = self.grid[y+dir[1]][x+dir[0]]
+						if not n.c in solids:
+							tile.neighbors.append(n)
+					except IndexError:
+						pass
 
 	def printMap(self):
 		print("THE MAP:")
@@ -54,7 +66,7 @@ class Map():
 				s += x.c
 			print(s)
 
-	def sprinkleEnemies(self, n=32):
+	def sprinkleEnemies(self, n=8):
 		while len(self.enemies) < n:
 			x = randint(1,self.size-2)
 			y = randint(1,self.size-2)
@@ -65,7 +77,7 @@ class Map():
 
 	def buildMapModel(self):
 		seed(self.seed)
-		empty_tile = Tile(c="")
+		empty_tile = Tile(0,0, c="")
 		s = len(self.grid)
 		for y,row in enumerate(self.grid):
 			for x,tile in enumerate(row):
@@ -124,7 +136,7 @@ class Map():
 						(-x,-y,0),((d*90),0,0))
 					n.reparentTo(node)
 				elif tile.c == ">":
-					n = makeInstance("stairs_up", self.parts["STAIRS_UP"],
+					n =  makeInstance("stairs_up", self.parts["STAIRS_UP"],
 						(-x,-y,0),((d*90),0,0))
 					n.reparentTo(node)
 				node.reparentTo(self.node)

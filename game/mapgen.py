@@ -50,14 +50,14 @@ def classicRogue(grid):
     y = randint(room[1]+1, room[1]+room[3]-2)
     grid[y][x].c = "<"
     print("down", room, x, y)
-
+    end = x, y
     room = choice(rooms)
     x = randint(room[0]+1, room[0]+room[2]-2)
     y = randint(room[1]+1, room[1]+room[3]-2)
     grid[y][x].c = ">"
     print("up", room, x, y)
-
-    return grid
+    start = x, y
+    return grid, start, end
 
 #braided recursive backtracking maze
 def simpleMaze(grid, start=[1,1], steps=2, braids=4):

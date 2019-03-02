@@ -23,6 +23,21 @@
 <Scalar> emitb { 0.000000 }
 }
 
+<Group> DRONE_SEC_EDGES {
+<Transform> {
+<Matrix4> {
+0.25112780928611755 0.0 0.0 0.0
+0.0 0.25112780928611755 0.0 0.0
+0.0 0.0 0.7346264123916626 0.0
+-1.0 0.0 0.0 1.0
+}
+}
+
+<VertexPool> DRONE_SEC_EDGES {
+}
+
+
+}
 <Group> Plane {
 <Transform> {
 <Matrix4> {

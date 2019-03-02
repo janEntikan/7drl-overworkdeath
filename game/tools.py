@@ -61,17 +61,23 @@ def getDistance(a, b):
 	dist = hypot(b[0]-a[0], b[1]-a[1])
 	return dist
 
-def distance_angle(x,y,angle,length):
+def towardSpeed(sx, sy, fx, fy):
+	dx, dy = sx - fx, sy - fy
+	dist = hypot(dx, dy)
+	dx, dy = dx/dist, dy/dist
+	return dx, dy
+
+def distanceAngle(x,y,angle,length):
 	x += sin(radians(angle))*length
 	y += cos(radians(angle))*length
 	return x, y
 
-def limit_number(n, maximum, minimum):
+def limitNumber(n, maximum, minimum):
 	if n > maximum: n = maximum
 	elif n < minimum: n = minimum
 	return n
 
-def merge_two_dicts(dict_a, dict_b):
+def mergeDicts(dict_a, dict_b):
 	dict_c = dict_a.copy()
 	dict_c.update(dict_b)
 	return dict_c

@@ -1,7 +1,7 @@
 import sys
 import os
 
-def make_wireframe(folder):
+def makeWireframe(folder):
     filename = "data/models/egg/" + folder+"/"+folder+".egg"
     print("wireframifying " + filename)
     filename_wire = filename[:-4]+"_wire.egg"
