@@ -50,10 +50,11 @@ class Enemy():
 
 	def load(self, models):
 		self.frames = {}
-		self.frames["idle"] = makeInstance(self.model, models[self.model])
+		self.frames["idle"] = makeInstance(self.model+"_IDLE", models[self.model+"_IDLE"])
 		self.frames["hurt"] = makeInstance(self.model+"_HURT", models[self.model+"_HURT"])
 		self.frames["dying"] = makeInstance(self.model+"_DYING", models[self.model+"_DYING"])
-		self.frames["step"] = makeInstance(self.model+"_STEP", models[self.model+"_STEP"])
+		self.frames["stepa"] = makeInstance(self.model+"_STEPA", models[self.model+"_STEPA"])
+		self.frames["stepb"] = makeInstance(self.model+"_STEPB", models[self.model+"_STEPB"])
 		self.frames["attack"] = makeInstance(self.model+"_ATTACK", models[self.model+"_ATTACK"])
 		self.switchFrame("idle")
 		self.node.setPos(-self.pos[0], -self.pos[1], 0)
@@ -68,7 +69,7 @@ class Enemy():
 	def update(self, game):
 		if self.stats.status == "Dying":
 			self.switchFrame("dying")
-			game.delay = 5
+			game.delay = 10
 			self.stats.status = "Dead"
 			return 0
 		if self.stats.status == "Dead":
@@ -86,7 +87,7 @@ class Enemy():
 		self.prev_pos = [sx, sy]
 		px, py = game.player.pos
 		tspeed = towardSpeed(sx, sy, px, py)
-		for i in range(16):
+		for i in range(32):
 			sx -= tspeed[0]
 			sy -= tspeed[1]
 			checkTile = game.map.grid[round(sy)][round(sx)]
@@ -95,9 +96,12 @@ class Enemy():
 			elif round(sx) == px and  round(sy) == py:
 				self.destination = [px, py]
 		if not self.destination == None:
+			#self.switchFrame("idle")
+
 			start = game.map.grid[int(self.pos[1])][int(self.pos[0])]
 			target = game.map.grid[self.destination[1]][self.destination[0]]
 			self.next_tile = flow_field(start, target)
+
 
 			enemy_tiles = []
 			for enemy in game.map.enemies:
@@ -136,6 +140,10 @@ class Enemy():
 		return False
 
 	def move(self, game):
+		if ((self.pos[0]+self.pos[1])%1) >= 0.5:
+			self.switchFrame("stepa")
+		else:
+			self.switchFrame("stepb")
 		mx = self.prev_pos[0]+self.move_speed[0]
 		my = self.prev_pos[1]+self.move_speed[1]
 		s = self.move_speed
@@ -152,4 +160,5 @@ class Enemy():
 				self.pos[1] = int(self.pos[1])
 				self.move_speed = [0,0]
 				self.prev_pos = self.pos[:]
+				self.switchFrame("idle")
 				return 1

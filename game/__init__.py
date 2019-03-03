@@ -43,6 +43,8 @@ class Game(ShowBase):
 			aspect2d.setShaderAuto()
 			filters = CommonFilters(base.win, base.cam)
 			filters.setBloom(blend=(0.1,0.1,0.1,0.0), mintrigger=0.0, maxtrigger=0.1, desat=0.0, intensity=0.6, size="small")
+			#filters = CommonFilters(base.win, base.cam2d)
+			#filters.setBloom(blend=(0.1,0.1,0.1,0.0), mintrigger=0.0, maxtrigger=0.1, desat=0.0, intensity=0.6, size="small")
 			#filters.setBlurSharpen(amount=0.4)
 
 		d = DirectionalLight("d")

@@ -5,7 +5,7 @@ class Cam():
     def __init__(self, x, y, angle):
         base.camLens.setFov(90)
         base.camNode.setCameraMask(BitMask32.bit(0))
-        base.camLens.setFar(10)
+        base.camLens.setFar(20)
         base.camLens.setNear(0.01)
         self.node = render.attachNewNode("placement")
         self.camNode = self.node.attachNewNode("cam")

@@ -9,7 +9,7 @@ def getPartsColors(name):
         parts[color] = getParts("data/models/egg/"+name+"/"+name, color=colors[color])
     return parts
 
-def wire(folder, color=None, s=3):
+def wire(folder, color=None, s=4):
     w = loader.loadModel(folder + "_wire.egg")
     d=5
     for child in w.getChildren():

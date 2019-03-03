@@ -5,15 +5,15 @@ from .tools import makeInstance
 class HUD():
 	def __init__(self, game):
 		self.game = game
-		self.font = loader.loadFont('data/fonts/ricasso.otf')
+		self.font = loader.loadFont('data/fonts/arizone.ttf')
 		self.font.render_mode = TextFont.RM_wireframe
-		self.font.setPixelsPerUnit(32)
+		self.font.setPixelsPerUnit(8)
 		stats = self.game.player.stats
 		self.title = self.addText("Overwork Death v0.2", 64, 0)
 		self.title.setAlign(TextNode.ARight)
 		self.lu = self.addText("...", 0,0)
-		self.ld = self.addText("...", 0, 23)
-		self.out = self.addText("...\n...\n...\n...", 64, 29)
+		self.ld = self.addText("...", 0, 24.5)
+		self.out = self.addText("...\n...\n...\n...", 64, 30)
 		self.out.setAlign(TextNode.ARight)
 		self.output = ["...", "...", "...", "..."]
 		self.update()
@@ -24,7 +24,7 @@ class HUD():
 		l.setText(str)
 		textNodePath = aspect2d.attachNewNode(l)
 		textNodePath.setScale(0.05)
-		textNodePath.setPos(-1.6+(x/20),0,0.8-(y/20))
+		textNodePath.setPos(-1.6+(x/20),0,0.85-(y/20))
 		return l
 
 	def update(self):
@@ -38,11 +38,11 @@ class HUD():
 			"hunger: "+str(int(stats.hunger))+"\n"+
 			"thirst: "+str(int(stats.thirst))+"\n"+
 			"status: "+stats.status+"\n")
-		self.ld.setText(s)
+		self.ld.setText(s.upper())
 		s = "name: "+stats.name +"\n"+"class: "+stats.clas
-		self.lu.setText(s)
+		self.lu.setText(s.upper())
 		self.output = self.output[-4:]
 		s = ""
 		for output in self.output:
 			s += output + "\n"
-		self.out.setText(s)
+		self.out.setText(s.upper())
