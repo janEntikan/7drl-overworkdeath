@@ -1,12 +1,7 @@
 from panda3d.core import NodePath
 from .data import wire, makeInstance
+from .colors import colors
 
-colors = {
-    "white" : (1,1,1,1),
-    "lred" : (1,0.5,0.5,1),
-    "red" : (1,0,0,1),
-    "dred" : (0.5,0,0,1),
-}
 
 def loadFont(fontname="toompoost", solid=True):
     font = {}

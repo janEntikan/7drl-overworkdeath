@@ -13,7 +13,8 @@ class Tile():
 		self.neighbors = []
 
 class Map():
-	def __init__(self, size=32):
+	def __init__(self, game, size=32):
+		self.game = game
 		self.size = size
 		self.seed = randint(0, 120000000000000)
 		self.start = (0,0)
@@ -26,8 +27,9 @@ class Map():
 		self.buildMapModel()
 
 	def loadParts(self):
-		self.parts = getParts("data/models/egg/parts/parts")
-		self.enemy_models = getParts("data/models/egg/enemies/enemies")
+		self.parts = self.game.parts_models
+		self.enemy_models = self.game.enemy_models
+		self.item_models = self.game.item_models
 
 	def generate(self):
 		seed(self.seed)
@@ -40,13 +42,11 @@ class Map():
 		self.grid = closeUpAndCrop(self.grid)
 		self.setNeighors()
 
-		self.sprinkleEnemies(16)
+		self.sprinkleEnemies(32)
 		self.printMap()
 
 	def setNeighors(self):
-		dirs = [
-			[0,-1], [1,0], [0,1], [-1,0]
-		]
+		dirs = [[0,-1], [1,0], [0,1], [-1,0]]
 		solids = "#W><"
 		for y, row in enumerate(self.grid):
 			for x, tile in enumerate(row):
@@ -72,7 +72,7 @@ class Map():
 			y = randint(1,self.size-2)
 			t = self.grid[y][x]
 			if t.c == "." or t.c == "+":
-				e = Enemy("DRONE_SEC", [x,y])
+				e = Enemy("DRONE_SEC", self, [x,y])
 				self.enemies.append(e)
 
 	def buildMapModel(self):
@@ -104,7 +104,6 @@ class Map():
 								(-x,-y,0),((0),0,0))
 							n.reparentTo(node)
 
-
 					struct = {}
 					struct["#"] = "WALL"
 					struct["="] = "DOOR_WALL"
@@ -123,9 +122,9 @@ class Map():
 									(-x,-y,0),((d*90),0,0))
 								n.reparentTo(node)
 								if not ntile.c == "=":
-									c = "CHAIRS_A", "CHAIRS_B", "CAMERA"
-									if randint(0,20) == 0:
-										n = makeInstance("chair", self.parts[choice(c)],
+									c = "CHAIRS_A", "CHAIRS_B", "CAMERA", "POSTER_A"
+									if randint(0,10) == 0:
+										n = makeInstance("prop", self.parts[choice(c)],
 											(-x,-y,0),((d*90),0,0))
 										n.reparentTo(node)
 				elif tile.c == "<":

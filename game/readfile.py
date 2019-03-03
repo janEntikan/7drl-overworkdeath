@@ -8,7 +8,6 @@ def folderToTextures(folder):
             dic[file[:-4]] = game.loader.loadTexture(folder+"/"+file)
     return dic
 
-
 def string_file_list(filename, splitChar=" "):
     with open(filename, "r") as ins:
         lines = []

@@ -25,8 +25,11 @@ class Player():
         self.mov_speed = 0.1
         self.place = [x,y,angle]
         self.prev_place = self.place[:]
-        self.stats = Statset()
         self.pos = self.place[0], self.place[1]
+        self.target = None
+        self.stats = Statset()
+        self.stats.endurance += 2
+        self.stats.updateStats()
 
     def update(self):
         self.camera.update(self.place)
@@ -50,9 +53,11 @@ class Player():
         mx = int(x+s[0])
         my = int(y+s[1])
         enemythere = False
+        self.target = None
         for enemy in game.map.enemies:
             if enemy.pos[0] == mx and enemy.pos[1] == my:
-                return 1
+                self.target = enemy
+                return "melee"
         self.pos = mx, my
         try:
             dest = game.map.grid[my][mx]
@@ -75,4 +80,4 @@ class Player():
             else:
                 return 1
         else:
-            return "die"
+            return "cancel"

@@ -1,0 +1,125 @@
+<CoordinateSystem> { Z-up }
+<Material> white {
+<Scalar> diffr { 0 }
+<Scalar> diffg { 0 }
+<Scalar> diffb { 0 }
+<Scalar> ambr { 0 }
+<Scalar> ambg { 0 }
+<Scalar> ambb { 0 }
+<Scalar> emitr { 1.000000 }
+<Scalar> emitg { 1.000000 }
+<Scalar> emitb { 1.000000 }
+}
+
+<Material> pitch {
+<Scalar> diffr { 0 }
+<Scalar> diffg { 0 }
+<Scalar> diffb { 0 }
+<Scalar> ambr { 0 }
+<Scalar> ambg { 0 }
+<Scalar> ambb { 0 }
+<Scalar> emitr { 0.000000 }
+<Scalar> emitg { 0.000000 }
+<Scalar> emitb { 0.000000 }
+}
+
+<Group> Plane {
+<Transform> {
+<Matrix4> {
+0.1590815782546997 0.0 0.0 0.0
+0.0 0.1590815782546997 0.0 0.0
+0.0 0.0 0.1590815782546997 0.0
+-0.014189958572387695 2.836116313934326 2.384185791015625e-06 1.0
+}
+}
+
+<VertexPool> Plane {
+
+<Vertex> 0 {-0.173272 2.677035 0.000002
+}
+<Vertex> 1 {0.144892 2.677035 0.000002
+}
+<Vertex> 2 {0.144892 2.995198 0.000002
+}
+<Vertex> 3 {-0.173272 2.995198 0.000002
+}}
+
+
+<Polygon> {
+<MRef> { pitch }
+<Normal> {0.000000 0.000000 1.000000}
+<RGBA> {0.000000 0.000000 0.000000 1}
+<BFace> { 1 }
+<VertexRef> { 0 1 2 3 <Ref> { Plane }}
+}
+}
+<Group> w_papercutterblade {
+<Transform> {
+<Matrix4> {
+1.0 0.0 0.0 0.0
+0.0 1.0 0.0 0.0
+0.0 0.0 1.0 0.0
+0.0 0.0 0.0 1.0
+}
+}
+
+<VertexPool> w_papercutterblade {
+
+<Vertex> 0 {-0.177066 0.049115 -0.063119
+}
+<Vertex> 1 {-0.175950 0.049115 0.054564
+}
+<Vertex> 2 {-0.157757 0.049115 0.116693
+}
+<Vertex> 3 {-0.124050 0.049115 0.041392
+}
+<Vertex> 4 {-0.124925 0.049115 -0.050933
+}
+<Vertex> 5 {-0.160053 0.049115 -0.125582
+}
+<Vertex> 6 {-0.124925 0.049115 -0.050933
+}
+<Vertex> 7 {-0.124050 0.049115 0.041392
+}
+<Vertex> 8 {0.186040 0.049115 0.058380
+}
+<Vertex> 9 {0.185286 0.049115 -0.021204
+}
+<Vertex> 10 {-2.176294 0.049115 0.027788
+}
+<Vertex> 11 {-2.143108 0.049115 0.083955
+}
+<Vertex> 12 {-1.550253 0.049115 0.031841
+}
+<Vertex> 13 {-0.813789 0.049115 0.021017
+}
+<Vertex> 14 {-0.175950 0.049115 0.054564
+}
+<Vertex> 15 {-0.177066 0.049115 -0.063119
+}
+<Vertex> 16 {-0.844147 0.049115 -0.103702
+}
+<Vertex> 17 {-1.510534 0.049115 -0.071090
+}}
+
+
+<Polygon> {
+<MRef> { pitch }
+<Normal> {0.000000 1.000000 -0.000000}
+<RGBA> {1.000000 1.000000 1.000000 1}
+<VertexRef> { 0 1 2 3 4 5 <Ref> { w_papercutterblade }}
+}
+<Polygon> {
+<MRef> { pitch }
+<Normal> {-0.000000 1.000000 0.000000}
+<RGBA> {1.000000 1.000000 1.000000 1}
+<VertexRef> { 6 7 8 9 <Ref> { w_papercutterblade }}
+}
+<Polygon> {
+<MRef> { pitch }
+<Normal> {-0.000000 1.000000 0.000000}
+<RGBA> {1.000000 1.000000 1.000000 1}
+<VertexRef> { 10 11 12 13 14 15 16 17 <Ref> { w_papercutterblade }}
+}
+}
+
