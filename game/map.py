@@ -41,7 +41,6 @@ class Map():
 		self.grid = simpleMaze(self.grid)
 		self.grid = closeUpAndCrop(self.grid)
 		self.setNeighors()
-
 		self.sprinkleEnemies(32)
 		self.printMap()
 
@@ -72,7 +71,9 @@ class Map():
 			y = randint(1,self.size-2)
 			t = self.grid[y][x]
 			if t.c == "." or t.c == "+":
-				e = Enemy("DRONE_SEC", self, [x,y])
+				cc = choice(("WORKER", "DRONE_SEC"))
+
+				e = Enemy(cc, self, [x,y])
 				self.enemies.append(e)
 
 	def buildMapModel(self):
@@ -121,9 +122,12 @@ class Map():
 								n = makeInstance(struct[ntile.c], self.parts[struct[ntile.c]],
 									(-x,-y,0),((d*90),0,0))
 								n.reparentTo(node)
-								if not ntile.c == "=":
-									c = "CHAIRS_A", "CHAIRS_B", "CAMERA", "POSTER_A"
-									if randint(0,10) == 0:
+								if not ntile.c == "=" and not ntile.c ==  "W":
+									c = [
+										"CHAIRS_A", "CHAIRS_B", "CHAIRS_C", "CAMERA", "POSTER_A", "BENCH",
+										"WATERCOOLER", "POSTER_B", "TREE", "POSTER", "CLOCK"
+									]
+									if randint(0,5) == 0:
 										n = makeInstance("prop", self.parts[choice(c)],
 											(-x,-y,0),((d*90),0,0))
 										n.reparentTo(node)

@@ -1,6 +1,7 @@
 from panda3d.core import NodePath
 from .tools import towardSpeed, makeInstance, getDistance
 from .stats import Statset
+from .enemies import enemy_stats
 
 def flow_field(start_tile, target_tile):
 	marks = {target_tile: 0}
@@ -21,7 +22,6 @@ def flow_field(start_tile, target_tile):
 		number_tries += 1
 		if number_tries > 32:
 			break
-
 	lower = start_tile
 	for neighbor in start_tile.neighbors:
 		try:
@@ -35,27 +35,26 @@ def flow_field(start_tile, target_tile):
 	return lower
 
 class Enemy():
-	def __init__(self, model, map, pos=[0,0]):
+	def __init__(self, type, map, pos=[0,0]):
 		self.map = map
 		self.mov_speed = 0.1
 		self.pos = pos
 		self.prev_pos = pos
-		self.model = model
+		self.type = type
 		self.destination = None
 		self.next_tile = None
-		self.stats = Statset()
-		self.stats.name = "goofball"
+		self.stats = enemy_stats[self.type]()
 		self.node = NodePath("enemy_"+self.stats.name)
 		self.speed = [0,self.stats.speed]
 
 	def load(self, models):
 		self.frames = {}
-		self.frames["idle"] = makeInstance(self.model+"_IDLE", models[self.model+"_IDLE"])
-		self.frames["hurt"] = makeInstance(self.model+"_HURT", models[self.model+"_HURT"])
-		self.frames["dying"] = makeInstance(self.model+"_DYING", models[self.model+"_DYING"])
-		self.frames["stepa"] = makeInstance(self.model+"_STEPA", models[self.model+"_STEPA"])
-		self.frames["stepb"] = makeInstance(self.model+"_STEPB", models[self.model+"_STEPB"])
-		self.frames["attack"] = makeInstance(self.model+"_ATTACK", models[self.model+"_ATTACK"])
+		self.frames["idle"] = makeInstance(self.type+"_IDLE", models[self.type+"_IDLE"])
+		self.frames["hurt"] = makeInstance(self.type+"_HURT", models[self.type+"_HURT"])
+		self.frames["dying"] = makeInstance(self.type+"_DYING", models[self.type+"_DYING"])
+		self.frames["stepa"] = makeInstance(self.type+"_STEPA", models[self.type+"_STEPA"])
+		self.frames["stepb"] = makeInstance(self.type+"_STEPB", models[self.type+"_STEPB"])
+		self.frames["attack"] = makeInstance(self.type+"_ATTACK", models[self.type+"_ATTACK"])
 		self.switchFrame("idle")
 		self.node.setPos(-self.pos[0], -self.pos[1], 0)
 
@@ -87,22 +86,21 @@ class Enemy():
 		self.prev_pos = [sx, sy]
 		px, py = game.player.pos
 		tspeed = towardSpeed(sx, sy, px, py)
-		for i in range(32):
+		look=True
+		while look:
 			sx -= tspeed[0]
 			sy -= tspeed[1]
 			checkTile = game.map.grid[round(sy)][round(sx)]
 			if checkTile.c == "W" or checkTile.c == "#":
-				break
+				look=False
 			elif round(sx) == px and  round(sy) == py:
 				self.destination = [px, py]
-		if not self.destination == None:
-			#self.switchFrame("idle")
 
+
+		if not self.destination == None:
 			start = game.map.grid[int(self.pos[1])][int(self.pos[0])]
 			target = game.map.grid[self.destination[1]][self.destination[0]]
 			self.next_tile = flow_field(start, target)
-
-
 			enemy_tiles = []
 			for enemy in game.map.enemies:
 				if not enemy is self:
