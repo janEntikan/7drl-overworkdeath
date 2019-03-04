@@ -28,6 +28,7 @@ class Player():
         self.pos = self.place[0], self.place[1]
         self.target = None
         self.stats = Statset()
+        self.stats.next_level = 50
         self.stats.endurance += 2
         self.stats.updateStats()
 

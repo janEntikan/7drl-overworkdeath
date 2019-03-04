@@ -72,7 +72,6 @@ class Map():
 			t = self.grid[y][x]
 			if t.c == "." or t.c == "+":
 				cc = choice(("WORKER", "DRONE_SEC"))
-
 				e = Enemy(cc, self, [x,y])
 				self.enemies.append(e)
 
@@ -125,7 +124,7 @@ class Map():
 								if not ntile.c == "=" and not ntile.c ==  "W":
 									c = [
 										"CHAIRS_A", "CHAIRS_B", "CHAIRS_C", "CAMERA", "POSTER_A", "BENCH",
-										"WATERCOOLER", "POSTER_B", "TREE", "POSTER", "CLOCK"
+										"WATERCOOLER", "POSTER_B", "TREE", "POSTER", "CLOCK", "PLANT"
 									]
 									if randint(0,5) == 0:
 										n = makeInstance("prop", self.parts[choice(c)],

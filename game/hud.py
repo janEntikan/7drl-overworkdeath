@@ -39,7 +39,7 @@ class HUD():
 			"thirst: "+str(int(stats.thirst))+"\n"+
 			"status: "+stats.status+"\n")
 		self.ld.setText(s.upper())
-		s = "name: "+stats.name +"\n"+"class: "+stats.clas
+		s = "name: "+stats.name +"\n"+"class: "+stats.clas+"\nlevel: "+str(stats.level)
 		self.lu.setText(s.upper())
 		self.output = self.output[-4:]
 		s = ""

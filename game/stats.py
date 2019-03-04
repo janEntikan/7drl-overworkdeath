@@ -10,8 +10,8 @@ class Statset():
 		self.weapon = None
 		self.armor = None
 		self.level = 1
-		self.experience = 0
-		self.next_level = 200
+		self.xp = 0
+		self.next_level = 10000000000
 
 		self.hunger = 0
 		self.thirst = 0
@@ -34,12 +34,28 @@ class Statset():
 		self.updateStats()
 
 	def turn(self):
-		self.hp += (0.04*self.endurance)
+		self.hp += (0.08)
 		self.hunger += 0.02
 		self.thirst += 0.05
 
 	def updateStats(self):
 		if not self.status == "Dead":
+			if self.xp >= self.next_level:
+				s = self.name + " gained a level!"
+				game.hud.output.append(s)
+				self.level += 1
+				self.next_level *= 1.9
+				self.nex_level = int(self.next_level)
+				self.strength += 1
+				self.accuracy += 1
+				self.intelligence += 1
+				self.personality += 1
+				self.endurance += 1
+				self.speed += 1
+				self.luck += 1
+				self.max_hp += self.level
+				self.hp += self.level
+
 			if self.hp > self.max_hp:
 				self.hp = self.max_hp
 			self.atk = self.strength
@@ -53,16 +69,21 @@ class Statset():
 				self.status = "Dying"
 
 	def attack(self, target):
-		target.updateStats()
-		atk = self.atk
-		atk /= target.d
-		if atk < 0: atk = 0
-		atk = int(atk)
-		target.hp -= atk
-		output = self.name + " hits " + target.name + " for " + str(atk) + " d"
-		game.hud.output.append(output)
-
-		if target.hp < 1:
-			output = target.name + " is killed."
+		if not target.status == "Dying" and not target.status == "Dead":
+			target.updateStats()
+			atk = self.atk
+			try:
+				atk /= target.d
+			except:
+				pass
+			if atk < 0: atk = 0
+			atk = int(atk)
+			if atk == 0: atk = 1
+			target.hp -= atk
+			output = self.name + " hits " + target.name + " for " + str(atk) + " d"
 			game.hud.output.append(output)
-		target.updateStats()
+
+			if target.hp < 1:
+				self.xp += target.xp
+			target.updateStats()
+			self.updateStats()
