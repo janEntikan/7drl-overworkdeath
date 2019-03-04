@@ -34,7 +34,7 @@ class Statset():
 		self.updateStats()
 
 	def turn(self):
-		self.hp += (0.08)
+		self.hp += (0.1)
 		self.hunger += 0.02
 		self.thirst += 0.05
 

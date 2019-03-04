@@ -1,6 +1,6 @@
 from random import randint, choice, seed
 from panda3d.core import NodePath
-from .tools import makeInstance
+from .tools import makeInstance, randExpo
 from .mapgen import classicRogue, simpleMaze, closeUpAndCrop
 from .data import getParts
 from .ai import Enemy
@@ -123,12 +123,16 @@ class Map():
 								n.reparentTo(node)
 								if not ntile.c == "=" and not ntile.c ==  "W":
 									c = [
-										"CHAIRS_A", "CHAIRS_B", "CHAIRS_C", "CAMERA", "POSTER_A", "BENCH",
-										"WATERCOOLER", "POSTER_B", "TREE", "POSTER", "CLOCK", "PLANT"
+										"CHAIRS_A", 	"PLANT_A",		"POSTER_A",
+										"CHAIRS_B", 	"PLANT_B",		"POSTER_B",
+										"CHAIRS_C", 	"PLANT_C",		"POSTER_C",
+										"BENCH", 		"ARCHIVE_A",	"CLOCK",
+										"WATERCOOLER",	"ARCHIVE_B", 	"CAMERA",
 									]
-									if randint(0,5) == 0:
-										n = makeInstance("prop", self.parts[choice(c)],
-											(-x,-y,0),((d*90),0,0))
+									p = randExpo(0,len(c)-1)
+									if randint(0,2) == 0:
+										n = makeInstance("prop", self.parts[c[p]],
+											(-x,-y,0),((d*90)+randint(0,2),0,0))
 										n.reparentTo(node)
 				elif tile.c == "<":
 					n = makeInstance("stairs_down", self.parts["STAIRS_DOWN"],

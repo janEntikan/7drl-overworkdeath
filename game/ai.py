@@ -72,7 +72,6 @@ class Enemy():
 			self.stats.status = "Dead"
 			output = self.stats.name + " is killed."
 			game.hud.output.append(output)
-			game.hud.update()
 			return 0
 		if self.stats.status == "Dead":
 			self.node.hide()

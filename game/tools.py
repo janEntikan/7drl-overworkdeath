@@ -1,5 +1,13 @@
 from math import hypot, sin, cos, radians
 from panda3d.core import Vec3, Point3, NodePath
+from random import randint
+
+def randExpo(min, max, e=1):
+	n = min
+	for i in range(max):
+		if randint(0,e) == 0: n += 1
+		if randint(0,max) == 0: break
+	return n
 
 def makeInstance(name, instance_model, pos=(0,0,0), hpr=(0,0,0), scale=(1,1,1)):
 	instance = NodePath(name)

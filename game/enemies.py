@@ -7,8 +7,8 @@ class Drone_sec(Statset):
         Statset.__init__(self)
         self.name = "Security droid"
         self.clas = "DRONE_SEC"
-        self.xp = 10
-        self.strength = 5
+        self.xp = 20
+        self.strength = 3
         self.accuracy = 4
         self.endurance = 5
         self.max_hp = 20

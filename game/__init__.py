@@ -109,11 +109,12 @@ class Game(ShowBase):
 					enemy.stats.turn()
 					self.actions.append((enemy.move, self))
 			self.player.stats.updateStats()
-			self.hud.update()
+
 		if self.inputs.buttons["stuff"]:
 			render.ls()
 
 	def update(self):
+		self.hud.update()
 		self.player.update()
 		for enemy in self.map.enemies:
 			enemy.update(self)
