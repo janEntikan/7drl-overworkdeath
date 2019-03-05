@@ -8,23 +8,24 @@ class HUD():
 		self.font = loader.loadFont('data/fonts/arizone.ttf')
 		self.font.render_mode = TextFont.RM_wireframe
 		self.font.setPixelsPerUnit(8)
-		stats = self.game.player.stats
-		self.title = self.addText("Overwork Death v0.2", 64, 0)
+		self.title = self.addText("Overwork Death v0.2", 38, -1)
 		self.title.setAlign(TextNode.ARight)
-		self.lu = self.addText("...", 0,0)
-		self.ld = self.addText("...", 0, 24.5)
-		self.out = self.addText("...\n...\n...\n...", 64, 30)
+		self.lu = self.addText("...", 0,-1)
+		self.ld = self.addText("...", 0, 29)
+		self.out = self.addText("...\n...\n...\n...", 38, 32.4)
 		self.out.setAlign(TextNode.ARight)
 		self.output = ["...", "...", "...", "..."]
-		self.update()
+
+	def ask(self, question, options):
+		pass
 
 	def addText(self, str, x, y):
 		l = TextNode('textnode')
 		l.setFont(self.font)
 		l.setText(str)
-		textNodePath = aspect2d.attachNewNode(l)
-		textNodePath.setScale(0.05)
-		textNodePath.setPos(-1.6+(x/20),0,0.85-(y/20))
+		textNodePath = render2d.attachNewNode(l)
+		textNodePath.setScale(0.03)
+		textNodePath.setPos(-0.95+(x/20),0,0.85-(y/20))
 		return l
 
 	def update(self):

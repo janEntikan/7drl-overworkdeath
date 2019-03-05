@@ -44,18 +44,37 @@ def classicRogue(grid):
             grid[y+room[1]][x+room[0]+room[2]].c = "="
             grid[y+room[1]][x+room[0]+room[2]+1].c = "."
 
+
+    grid = simpleMaze(grid)
+    for r, room in enumerate(rooms):
+        for y in range(room[3]):
+            for x in range(room[2]):
+                if y == 0:
+                    grid[room[1]+y-2][room[0]+x-1].c = "."
+                    grid[room[1]+y-2][room[0]+x+1].c = "."
+                if y == room[3]:
+                    grid[room[1]+y+2][room[0]+x-1].c = "."
+                    grid[room[1]+y+2][room[0]+x+1].c = "."
+                if x == 0:
+                    grid[room[1]+y-1][room[0]+x-2].c = "."
+                    grid[room[1]+y+1][room[0]+x-2].c = "."
+                if x == room[2]:
+                    grid[room[1]+y-1][room[0]+x+2].c = "."
+                    grid[room[1]+y+1][room[0]+x+2].c = "."
+
     # add stairs down to a random room
     room = choice(rooms)
     x = randint(room[0]+1, room[0]+room[2]-2)
     y = randint(room[1]+1, room[1]+room[3]-2)
     grid[y][x].c = "<"
-    print("down", room, x, y)
     end = x, y
-    room = choice(rooms)
+    uproom = room
+    while uproom == room:
+        uproom = choice(rooms)
+    room = uproom
     x = randint(room[0]+1, room[0]+room[2]-2)
     y = randint(room[1]+1, room[1]+room[3]-2)
     grid[y][x].c = ">"
-    print("up", room, x, y)
     start = x, y
     return grid, start, end
 

@@ -7,7 +7,7 @@ class Drone_sec(Statset):
         Statset.__init__(self)
         self.name = "Security droid"
         self.clas = "DRONE_SEC"
-        self.xp = 20
+        self.xp = 80
         self.strength = 3
         self.accuracy = 4
         self.endurance = 5
@@ -20,7 +20,7 @@ class Worker(Statset):
         Statset.__init__(self)
         self.name = "Office worker"
         self.clas = "WORKER"
-        self.xp = 5
+        self.xp = 40
         self.speed = 5
         self.strength = 1
         self.accuracy = 5

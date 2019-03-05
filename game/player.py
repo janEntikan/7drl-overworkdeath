@@ -28,7 +28,7 @@ class Player():
         self.pos = self.place[0], self.place[1]
         self.target = None
         self.stats = Statset()
-        self.stats.next_level = 50
+        self.stats.next_level = 100
         self.stats.endurance += 2
         self.stats.updateStats()
 
@@ -63,9 +63,10 @@ class Player():
         try:
             dest = game.map.grid[my][mx]
         except:
-            print(mx, my)
+            pass
+            #print(mx, my)
         #hittesting
-        if dest.c == "." or dest.c == "+" or dest.c == "=":
+        if dest.c == "." or dest.c == "+" or dest.c == "=" or dest.c == "<":
             move = True
             if move:
                 #increment movement

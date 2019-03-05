@@ -1,3 +1,5 @@
+from random import randint
+
 class Statset():
 	def __init__(self):
 		self.name = "wolverine"
@@ -44,7 +46,7 @@ class Statset():
 				s = self.name + " gained a level!"
 				game.hud.output.append(s)
 				self.level += 1
-				self.next_level *= 1.9
+				self.next_level += self.level*100
 				self.nex_level = int(self.next_level)
 				self.strength += 1
 				self.accuracy += 1
@@ -68,22 +70,31 @@ class Statset():
 			if self.hp < 1:
 				self.status = "Dying"
 
-	def attack(self, target):
+	def attack(self, target, is_player=False):
+		self.updateStats()
+		target.updateStats()
 		if not target.status == "Dying" and not target.status == "Dead":
-			target.updateStats()
-			atk = self.atk
-			try:
-				atk /= target.d
-			except:
-				pass
-			if atk < 0: atk = 0
-			atk = int(atk)
-			if atk == 0: atk = 1
-			target.hp -= atk
-			output = self.name + " hits " + target.name + " for " + str(atk) + " d"
-			game.hud.output.append(output)
+			acc = int(self.accuracy - (target.speed/2))
 
-			if target.hp < 1:
-				self.xp += target.xp
-			target.updateStats()
-			self.updateStats()
+			if acc > 0 or randint(0,1) == 0:
+				atk = self.atk
+				try:
+					atk /= target.d
+				except:
+					pass
+				if atk < 0: atk = 0
+				atk = int(atk)
+				if atk == 0: atk = 1
+				target.hp -= atk
+				if is_player:
+					output = "You hit " + target.name + " for " + str(atk) + " d"
+				else:
+					output = self.name + " hits " + target.name + " for " + str(atk) + " d"
+				game.hud.output.append(output)
+				if target.hp < 1:
+					self.xp += target.xp
+			else:
+				output = self.name + " swings but misses!"
+				game.hud.output.append(output)
+		target.updateStats()
+		self.updateStats()

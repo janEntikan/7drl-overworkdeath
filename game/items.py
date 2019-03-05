@@ -13,8 +13,6 @@ class Weapon(Item):
         self.name = "weapon"
         self.ranged = False
         self.verb = "equip"
-items["weapons"] = {}
-
 # RANGED
 class PenDispenser(Weapon):
     def __init__(self):
@@ -23,7 +21,7 @@ class PenDispenser(Weapon):
         self.damage = 1
         self.intelect = 1
         self.ranged = True
-items["weapons"]["pendispenser"] = PenDispenser
+items["pendispenser"] = PenDispenser
 
 class StapleGun(Weapon):
     def __init__(self):
@@ -32,7 +30,7 @@ class StapleGun(Weapon):
         self.damage = 2
         self.intelect = 2
         self.ranged = True
-items["weapons"]["staplegun"] = StapleGun
+items["staplegun"] = StapleGun
 
 class Flamethrower(Weapon):
     def __init__(self):
@@ -41,7 +39,7 @@ class Flamethrower(Weapon):
         self.damage = 4
         self.intelect = 3
         self.ranged = True
-items["weapons"]["staplegun"] = StapleGun
+items["flamethrower"] = Flamethrower
 
 class NailGun(Weapon):
     def __init__(self):
@@ -50,7 +48,7 @@ class NailGun(Weapon):
         self.damage = 5
         self.intelect = 2
         self.ranged = True
-items["weapons"]["nailgun"] = NailGun
+items["nailgun"] = NailGun
 
 class Handgun(Weapon):
     def __init__(self):
@@ -60,7 +58,7 @@ class Handgun(Weapon):
         self.damage = 6
         self.intelect = 5
         self.ranged = True
-items["weapons"]["handgun"] = Handgun
+items["handgun"] = Handgun
 
 class Shotgun(Weapon):
     def __init__(self):
@@ -69,26 +67,26 @@ class Shotgun(Weapon):
         self.damage = 7
         self.intelect = 6
         self.ranged = True
-items["weapons"]["shotgun"] = Shotgun
+items["shotgun"] = Shotgun
 
-class AutoRifle(Weapon):
+class MachineGun(Weapon):
     def __init__(self):
         Weapon.__init__(self)
-        self.name = "Automatic Rifle"
+        self.name = "Machine Gun"
         self.damage = 8
         self.intelect = 7
         self.ranged = True
-items["weapons"]["autorifle"] = AutoRifle
+items["machinegun"] = MachineGun
 
 # MELEE
 class RandomWeak(Weapon):
     def __init__(self):
         Weapon.__init__(self)
-        names = "letter-opener", "screwdriver", "scissors", "suitcase"
+        names = "letter-opener", "screwdriver", "pair of scissors", "suitcase"
         self.name = choice(names)
         self.damage = 1
         self.intelect = 1
-items["weapons"]["randomweak"] = RandomWeak
+items["randomweak"] = RandomWeak
 
 class RandomMed(Weapon):
     def __init__(self):
@@ -97,7 +95,7 @@ class RandomMed(Weapon):
         self.name = choice(names)
         self.damage = 3
         self.intelect = 1
-items["weapons"]["randomweak"] = RandomWeak
+items["randommed"] = RandomWeak
 
 class Boxcutter(Weapon):
     def __init__(self):
@@ -105,7 +103,7 @@ class Boxcutter(Weapon):
         self.name = "boxcutter"
         self.damage = 4
         self.intelect = 1
-items["weapons"]["boxcutter"] = Boxcutter
+items["boxcutter"] = Boxcutter
 
 class PapercutterSword(Weapon):
     def __init__(self):
@@ -113,7 +111,7 @@ class PapercutterSword(Weapon):
         self.name = "papercutter sword"
         self.damage = 5
         self.intelect = 1
-items["weapons"]["papercutter"] = PapercutterSword
+items["papercutter"] = PapercutterSword
 
 # CONSUMABLES
 class Consumables(Item):
@@ -122,32 +120,31 @@ class Consumables(Item):
         self.type = "consumable"
         self.name = "consumable"
         self.verb = "use"
-    def use(self):
+    def use(self, stats):
         game.hud.output.append("You use the " + self.name)
-items["consumable"] = {}
 
 class Thermos(Item):
     def __init__(self):
         Item.__init__(self)
         self.name = "thermos"
-        self.contents = choice("coffee", "tea", "chocolate")
+        self.contents = choice(("coffee", "tea", "chocolate"))
         self.verb = "quaff"
-items["consumable"]["thermos"] = Thermos
+items["thermos"] = Thermos
 
 class Softdrink(Item):
     def __init__(self):
         Item.__init__(self)
-        self.name = "softdrink"
         self.contents = choice(("red", "yellow" "orange", "green", "blue", "purple"))
+        self.name = self.contents + " softdrink"
         self.verb = "quaff"
-items["consumable"]["softdrink"] = Softdrink
+items["softdrink"] = Softdrink
 
 class Snack(Item):
     def __init__(self):
         Item.__init__(self)
-        self.name = "Food"
-        self.snacktypes = ("candybar","chips","cookie","raisins","nuts","sandwich")
+        self.snacktypes = ("candybar","bag of chips","cookie","box of raisins","bag of nuts","sandwich")
         self.snacktype = randExpo(0,len(self.snacktypes))
-        self.contents = self.types[self.type]
+        self.contents = self.snacktypes[self.snacktype]
+        self.name = self.contents
         self.verb = "eat"
-items["consumable"]["food"] = Snack
+items["snack"] = Snack

@@ -123,6 +123,9 @@ class Enemy():
 				allow = False
 				self.switchFrame("attack")
 				self.stats.attack(player.stats)
+				game.transition.setFadeColor(0.1,0,0)
+				game.transition.fadeOut(0.1)
+				game.transition.fadeIn(0.1)
 
 			if allow:
 				self.move_speed = [0,0]
