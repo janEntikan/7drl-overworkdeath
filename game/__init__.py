@@ -1,6 +1,7 @@
 import asyncio
-
+from math import sin
 from sys import exit
+from random import choice
 from direct.showbase.ShowBase import *
 from direct.filter.CommonFilters import CommonFilters
 from panda3d.core import ClockObject, WindowProperties, DirectionalLight
@@ -20,7 +21,7 @@ class Game(ShowBase):
 		self.cfg = cfgdict("data/default_config.cfg")
 		globalClock.setMode(ClockObject.MLimited)
 		globalClock.setFrameRate(int(self.cfg["general"]["framerate"]))
-		base.setFrameRateMeter(int(self.cfg["general"]["debug"]))
+		#base.setFrameRateMeter(int(self.cfg["general"]["debug"]))
 		props = WindowProperties()
 		props.setSize(tuple(self.cfg["general"]["resolution"]))
 		props.setFullscreen(int(self.cfg["general"]["fullscreen"]))
@@ -31,8 +32,8 @@ class Game(ShowBase):
 		base.win.setClearColor((0,0,0,0))
 		self.inputs = Inputs(self.cfg["key"])
 
-		cats=["font_daego", "font_toompoost", "parts", "enemies", "items"]
-		for cat in cats: makeWireframe(cat)
+		#cats=["mainmenu", "font_daego", "font_toompoost", "parts", "enemies", "items"]
+		#for cat in cats: makeWireframe(cat)
 
 		self.hud = HUD(self)
 
@@ -41,12 +42,22 @@ class Game(ShowBase):
 		self.enemy_models = getParts("data/models/egg/enemies/enemies")
 		self.item_models = getParts("data/models/egg/items/items")
 
+		sounds = [
+			"break", "error", "explosion", "hit_a", "hit_b", "hit_c", "scare",
+			"select_a", "select_b", "splurt_a", "splurt_b", "swallow",
+			"step_enemy_a", "step_enemy_b", "step_enemy_c", "step_player", "turn"
+		]
+		self.sounds = {}
+		for sound in sounds:
+			self.sounds[sound] = loader.loadSfx("data/sound/"+sound+".wav")
+		self.sounds["step_player"].setVolume(0.3)
+
 		if self.cfg["general"]["fx"] == 1:
 			render.setShaderAuto()
 			aspect2d.setShaderAuto()
 			filters = CommonFilters(base.win, base.cam)
 			filters.setBloom(blend=(0.1,0.1,0.1,0.0), mintrigger=0.0, maxtrigger=0.1, desat=0.0, intensity=0.6, size="small")
-		self.startGame()
+		#self.startGame()
 
 	def startGame(self):
 		self.hud.output.append("Where is everybody?")
@@ -82,19 +93,60 @@ class Game(ShowBase):
 		self.transition.fadeIn(1)
 		self.mode = "game"
 
+	def mainMenu(self, task):
+		if self.running:
+			self.mcp[3]+=1
+			self.mcp[2] = 8 + (sin(self.mcp[3]/50)*7)
+			base.camera.setPos(self.mcp[0], self.mcp[1], self.mcp[2])
+			self.buildingmodel["tower"][0].setHpr(self.mcp[3],0,0)
+			self.buildingmodel["tower"][1].setHpr(self.mcp[3],0,0)
+
+			if self.inputs.buttons["quit"]:
+				self.running = False
+			if self.inputs.buttons["start_game"]:
+				self.bgsong.stop()
+				self.sounds["select_b"].play()
+				base.camera.setPos(0,0,0)
+				self.hud.loadGameHud()
+				self.startGame()
+				self.bgsong = loader.loadSfx("data/music/LEVEL1.ogg")
+				self.bgsong.setVolume(0.3)
+				self.bgsong.setLoop(True)
+				self.bgsong.play()
+				self.taskMgr.add(self.loop, "main_loop")
+				return False
+			return task.cont
+		print("bye!")
+		exit()
+
 	def load(self):
 		self.running = True
 		self.actions = []
-		self.taskMgr.add(self.loop, "main_loop")
+		self.bgsong = loader.loadSfx("data/music/THEME.ogg")
+		self.bgsong.setVolume(0.5)
+		self.bgsong.setLoop(True)
+		self.bgsong.play()
+
+		self.buildingmodel = getParts("data/models/egg/mainmenu/mainmenu", color=None)
+		self.buildingmodel["tower"][0].reparentTo(render)
+		self.buildingmodel["tower"][1].reparentTo(render)
+		d = DirectionalLight("d")
+		dn = render.attachNewNode(d)
+		render.setLight(dn)
+		self.mcp = [0,-20,8, 1200]
+		self.taskMgr.add(self.mainMenu, "main_menu")
+
 
 	def loop(self, task):
 		if self.running:
+			self.hud.update()
 			if self.inputs.buttons["quit"]:
 				self.running = False
 			if self.mode == "game":
 				if self.player.stats.status == "Dying":
 					self.hud.output.append("You died.")
 					self.mode = "gameover"
+					self.sounds["explosion"].play()
 					taskMgr.add(die())
 				else:
 					self.delay -= 1
@@ -107,7 +159,7 @@ class Game(ShowBase):
 									self.actions.remove(action)
 						else:
 							self.input()
-				self.update()
+						self.update()
 			elif self.mode == "inventory":
 				answer = self.hud.ask("inventory:", self.player.stats.inventory)
 				if not answer == None:
@@ -132,28 +184,35 @@ class Game(ShowBase):
 					self.transition.fadeOut(0.1)
 					self.transition.fadeIn(0.01)
 					self.hud.update()
+					l = "_a", "_b", "_c"
+					self.sounds["hit"+choice(l)].play()
 					act = True
 				else:
 					self.actions.append((self.player.move,-1))
 					act = True
 
 		elif self.inputs.buttons["backward"]:
+			self.sounds["turn"].play()
 			self.player.turn(1)
 			self.actions.append((self.player.turn, 1))
 			self.player.turn(1)
 			self.actions.append((self.player.turn, 1))
 		elif self.inputs.buttons["wait"]:
 			act = True
+			self.sounds["turn"].play()
 			self.delay = 10
 			self.hud.output.append("You wait.")
 		elif self.inputs.buttons["turn_left"]:
+			self.sounds["turn"].play()
 			self.player.turn(1)
 			self.actions.append((self.player.turn, 1))
 		elif self.inputs.buttons["turn_right"]:
+			self.sounds["turn"].play()
 			self.player.turn(-1)
 			self.actions.append((self.player.turn, -1))
 		elif self.inputs.buttons["take"]:
 			if not tile.item == None:
+				self.sounds["select_b"].play()
 				tile.item[0].removeNode()
 				i = items[tile.item[1]]()
 				self.player.stats.inventory.append(i)
@@ -177,7 +236,6 @@ class Game(ShowBase):
 			self.player.stats.updateStats()
 
 	def update(self):
-		self.hud.update()
 		self.player.update()
 		for enemy in self.map.enemies:
 			enemy.update(self)

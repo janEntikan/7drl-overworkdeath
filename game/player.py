@@ -58,7 +58,8 @@ class Player():
         for enemy in game.map.enemies:
             if enemy.pos[0] == mx and enemy.pos[1] == my:
                 self.target = enemy
-                return "melee"
+                if not self.target.stats.status == "Dead" and not self.target.stats.status == "Dying":
+                    return "melee"
         self.pos = mx, my
         try:
             dest = game.map.grid[my][mx]
@@ -78,6 +79,7 @@ class Player():
                 if self.place[0] == self.prev_place[0]+s[0]:
                     if self.place[1] == self.prev_place[1]+s[1]:
                         self.prev_place = self.place[:]
+                        game.sounds["step_player"].play()
                         return 1
             else:
                 return 1

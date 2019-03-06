@@ -1,4 +1,5 @@
 from panda3d.core import NodePath
+from random import choice
 from .tools import towardSpeed, makeInstance, getDistance
 from .stats import Statset
 from .enemies import enemy_stats
@@ -67,101 +68,110 @@ class Enemy():
 
 	def update(self, game):
 		if self.stats.status == "Dying":
+			l = "scare", "break"
+			game.sounds[choice(l)].play()
 			self.switchFrame("dying")
-			game.delay = 10
+			game.delay = 20
 			self.stats.status = "Dead"
 			output = self.stats.name + " is killed."
 			game.hud.output.append(output)
 			return 0
 		if self.stats.status == "Dead":
-			self.node.hide()
 			game.map.enemies.remove(self)
+			self.node.hide()
+			self.node.removeNode()
 			return 0
 
 	def plan(self, game, ei):
-		self.speed[0] -= 1
-		if self.speed[0] <= 0:
-			self.speed[0] = self.speed[1]
-			return False
+		if not self.stats.status == "Dying" and not self.stats.status == "Dead":
+			self.speed[0] -= 1
+			if self.speed[0] <= 0:
+				self.speed[0] = self.speed[1]
+				return False
 
-		sx, sy = self.pos
-		self.prev_pos = [sx, sy]
-		px, py = game.player.pos
-		tspeed = towardSpeed(sx, sy, px, py)
-		look=True
-		while look:
-			sx -= tspeed[0]
-			sy -= tspeed[1]
-			checkTile = game.map.grid[round(sy)][round(sx)]
-			if checkTile.c == "W" or checkTile.c == "#":
-				look=False
-			elif round(sx) == px and  round(sy) == py:
-				self.destination = [px, py]
+			sx, sy = self.pos
+			self.prev_pos = [sx, sy]
+			px, py = game.player.pos
+			tspeed = towardSpeed(sx, sy, px, py)
+			look=True
+			while look:
+				sx -= tspeed[0]
+				sy -= tspeed[1]
+				checkTile = game.map.grid[round(sy)][round(sx)]
+				if checkTile.c == "W" or checkTile.c == "#":
+					look=False
+				elif round(sx) == px and  round(sy) == py:
+					self.destination = [px, py]
 
 
-		if not self.destination == None:
-			start = game.map.grid[int(self.pos[1])][int(self.pos[0])]
-			target = game.map.grid[self.destination[1]][self.destination[0]]
-			self.next_tile = flow_field(start, target)
-			enemy_tiles = []
-			for enemy in game.map.enemies:
-				if not enemy is self:
-					if not enemy.next_tile == None:
-						enemy_tiles.append(enemy.next_tile.place)
-					else:
-						enemy_tiles.append(enemy.pos)
-			allow = True
-			for tile in enemy_tiles:
-				if int(tile[0]) == int(self.next_tile.place[0]) and int(tile[1]) == int(self.next_tile.place[1]):
+			if not self.destination == None:
+				start = game.map.grid[int(self.pos[1])][int(self.pos[0])]
+				target = game.map.grid[self.destination[1]][self.destination[0]]
+				self.next_tile = flow_field(start, target)
+				enemy_tiles = []
+				for enemy in game.map.enemies:
+					if not enemy is self:
+						if not enemy.next_tile == None:
+							enemy_tiles.append(enemy.next_tile.place)
+						else:
+							enemy_tiles.append(enemy.pos)
+				allow = True
+				for tile in enemy_tiles:
+					if int(tile[0]) == int(self.next_tile.place[0]) and int(tile[1]) == int(self.next_tile.place[1]):
+						allow = False
+						break
+
+				player = game.player
+				pt = game.map.grid[player.pos[1]][player.pos[0]]
+				if self.next_tile == pt:
+					self.next_tile = None
 					allow = False
-					break
+					l = "_a", "_b", "_c"
+					game.sounds["hit"+choice(l)].play()
+					self.switchFrame("attack")
+					self.stats.attack(player.stats)
+					game.transition.setFadeColor(0.1,0,0)
+					game.transition.fadeOut(0.1)
+					game.transition.fadeIn(0.1)
 
-			player = game.player
-			pt = game.map.grid[player.pos[1]][player.pos[0]]
-			if self.next_tile == pt:
-				self.next_tile = None
-				allow = False
-				self.switchFrame("attack")
-				self.stats.attack(player.stats)
-				game.transition.setFadeColor(0.1,0,0)
-				game.transition.fadeOut(0.1)
-				game.transition.fadeIn(0.1)
-
-			if allow:
-				self.move_speed = [0,0]
-				if self.next_tile.place[0] > self.pos[0]:
-					self.move_speed[0] = 1
-				elif self.next_tile.place[0] < self.pos[0]:
-					self.move_speed[0] = -1
-				if self.next_tile.place[1] > self.pos[1]:
-					self.move_speed[1] = 1
-				elif self.next_tile.place[1] < self.pos[1]:
-					self.move_speed[1] = -1
-				return True
-			else:
-				self.next_tile = None
+				if allow:
+					c = "_a", "_b", "_c"
+					game.sounds["step_enemy"+choice(c)]
+					self.move_speed = [0,0]
+					if self.next_tile.place[0] > self.pos[0]:
+						self.move_speed[0] = 1
+					elif self.next_tile.place[0] < self.pos[0]:
+						self.move_speed[0] = -1
+					if self.next_tile.place[1] > self.pos[1]:
+						self.move_speed[1] = 1
+					elif self.next_tile.place[1] < self.pos[1]:
+						self.move_speed[1] = -1
+					return True
+				else:
+					self.next_tile = None
 		return False
 
 	def move(self, game):
-		if ((self.pos[0]+self.pos[1])%1) >= 0.5:
-			self.switchFrame("stepa")
-		else:
-			self.switchFrame("stepb")
-		mx = self.prev_pos[0]+self.move_speed[0]
-		my = self.prev_pos[1]+self.move_speed[1]
-		s = self.move_speed
-		#increment movement
-		self.pos[0] += s[0]*self.mov_speed
-		self.pos[1] += s[1]*self.mov_speed
-		self.pos[0] = round(self.pos[0],2)
-		self.pos[1] = round(self.pos[1],2)
-		self.node.setPos(-self.pos[0], -self.pos[1], 0)
-		#and break when full step made
-		if self.pos[0] == round(self.prev_pos[0]+s[0],2):
-			if self.pos[1] == round(self.prev_pos[1]+s[1],2):
-				self.pos[0] = int(self.pos[0])
-				self.pos[1] = int(self.pos[1])
-				self.move_speed = [0,0]
-				self.prev_pos = self.pos[:]
-				self.switchFrame("idle")
-				return 1
+		if not self.stats.status == "Dying" and not self.stats.status == "Dead":
+			if ((self.pos[0]+self.pos[1])%1) >= 0.5:
+				self.switchFrame("stepa")
+			else:
+				self.switchFrame("stepb")
+			mx = self.prev_pos[0]+self.move_speed[0]
+			my = self.prev_pos[1]+self.move_speed[1]
+			s = self.move_speed
+			#increment movement
+			self.pos[0] += s[0]*self.mov_speed
+			self.pos[1] += s[1]*self.mov_speed
+			self.pos[0] = round(self.pos[0],2)
+			self.pos[1] = round(self.pos[1],2)
+			self.node.setPos(-self.pos[0], -self.pos[1], 0)
+			#and break when full step made
+			if self.pos[0] == round(self.prev_pos[0]+s[0],2):
+				if self.pos[1] == round(self.prev_pos[1]+s[1],2):
+					self.pos[0] = int(self.pos[0])
+					self.pos[1] = int(self.pos[1])
+					self.move_speed = [0,0]
+					self.prev_pos = self.pos[:]
+					self.switchFrame("idle")
+					return 1
