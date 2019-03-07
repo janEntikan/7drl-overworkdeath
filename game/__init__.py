@@ -23,12 +23,13 @@ class Game(ShowBase):
 		globalClock.setMode(ClockObject.MLimited)
 		globalClock.setFrameRate(int(self.cfg["general"]["framerate"]))
 		#base.setFrameRateMeter(int(self.cfg["general"]["debug"]))
-		props = WindowProperties()
-		props.setSize(tuple(self.cfg["general"]["resolution"]))
-		props.setFullscreen(int(self.cfg["general"]["fullscreen"]))
-		props.setCursorHidden(True)
+		self.props = WindowProperties()
+		self.props.setSize(tuple(self.cfg["general"]["resolution"]))
+		self.props.setFullscreen(int(self.cfg["general"]["fullscreen"]))
+		self.props.setCursorHidden(True)
+		self.fullscreen = int(self.cfg["general"]["fullscreen"])
 		#props.setMouseMode(WindowProperties.M_relative)
-		base.win.requestProperties(props)
+		base.win.requestProperties(self.props)
 		base.disableMouse()
 		base.win.setClearColor((0,0,0,0))
 		self.inputs = Inputs(self.cfg["key"])
@@ -279,6 +280,14 @@ class Game(ShowBase):
 				if tile.c == "<":
 					self.nextLevel()
 				self.inputs.buttons["stairs_down"] = False
+			elif self.inputs.buttons["fullscreen"]:
+				if self.fullscreen:
+					self.fullscreen = 0
+				else:
+					self.fullscreen = 1
+				self.props.setFullscreen(int(self.fullscreen))
+				base.win.requestProperties(self.props)
+				self.inputs.buttons["fullscreen"] = False
 			else:
 				verbs = "inventory", "drop", "throw", "eat","quaff", "wield", "stats", "help"
 				for i in self.inputs.buttons:

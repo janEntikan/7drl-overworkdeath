@@ -46,7 +46,7 @@ class Player():
 		if self.stats.blind > 0:
 			base.camLens.setFar(1)
 		else:
-			base.camLens.setFar(20)
+			base.camLens.setFar(int(game.cfg["general"]["distance"]))
 		self.camera.update(self.place)
 
 	def turn(self, d):
