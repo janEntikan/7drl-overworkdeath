@@ -1,4 +1,4 @@
-from panda3d.core import RenderModeAttrib, Material, ColorAttrib, NodePath
+from panda3d.core import RenderModeAttrib, Material, ColorAttrib, NodePath, TransparencyAttrib
 from panda3d.bullet import BulletTriangleMesh, BulletTriangleMeshShape, BulletBoxShape
 from .tools import makeInstance
 from .colors import colors
@@ -25,8 +25,8 @@ def wire(folder, color=None, s=4):
             else:
                 c = color
         child.node().setAttrib(RenderModeAttrib.make(d, s, False, c))
-    m = loader.loadModel(folder + "_model.egg")
 
+    m = loader.loadModel(folder + "_model.egg")
     return w, m
 
 def getParts(folder, color=None):
@@ -40,5 +40,8 @@ def getParts(folder, color=None):
         parts_model[w].setPos(0,0,0)
         parts_wire[w].flattenStrong()
         parts_model[w].flattenStrong()
+        parts_wire[w].setBin("back_to_front", 0)
+        #parts_wire[w].setDepthTest(False)
+        #parts_wire[w].setDepthWrite(False)
         objects[wireframe.get_name()] = parts_wire[w], parts_model[w]
     return objects

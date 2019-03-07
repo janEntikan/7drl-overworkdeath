@@ -1,9 +1,2 @@
-def flow:
-  marked_tiles = [<target_tile>];
-  marks = {0: <target_tile>};
-  newly_marked_tiles = [];
-  last_step_marked = [<target_tile>];
-  current_mark = 0
-  while <start_tile> not in marked_tiles:
-    current_mark += 1;
-    new_neighbors = [tile for tile in set(tile.neighbors() for tile in last_step_marked) if tile not in marked_tiles]
+different levels each use random WALL part. Different "patterns.
+maybe also find all the materials named "grey2" and change the color to something else.

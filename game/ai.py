@@ -47,7 +47,7 @@ class Enemy():
 		self.stats = enemy_stats[self.type]()
 		self.node = NodePath("enemy_"+self.stats.name)
 		self.speed = [0,self.stats.speed]
-
+		self.aiming = False
 	def load(self, models):
 		self.frames = {}
 		self.frames["idle"] = makeInstance(self.type+"_IDLE", models[self.type+"_IDLE"])
@@ -73,8 +73,6 @@ class Enemy():
 			self.switchFrame("dying")
 			game.delay = 20
 			self.stats.status = "Dead"
-			output = self.stats.name + " is killed."
-			game.hud.output.append(output)
 			return 0
 		if self.stats.status == "Dead":
 			game.map.enemies.remove(self)
@@ -102,6 +100,24 @@ class Enemy():
 					look=False
 				elif round(sx) == px and  round(sy) == py:
 					self.destination = [px, py]
+					if sx == px or sy == py:
+						if self.aiming:
+							game.hud.output.append("you hear a gunshot")
+							a = choice("abc")
+							game.sounds["projectile_"+a].play()
+							self.stats.attack(game.player.stats, False, True)
+							game.transition.setFadeColor(0.1,0.0,0.0)
+							game.transition.fadeOut(0.1)
+							game.transition.fadeIn(0.01)
+							allow = False
+						if not self.stats.weapon == None:
+							if self.stats.weapon.ranged:
+								distance = getDistance([sx, sy], [px, py])
+								if distance < int((self.stats.accuracy*2)):
+									self.aiming = True
+									allow = False
+					else:
+						self.aiming = False
 
 
 			if not self.destination == None:

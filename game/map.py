@@ -4,6 +4,7 @@ from .tools import makeInstance, randExpo, getDistance
 from .mapgen import classicRogue, simpleMaze, closeUpAndCrop
 from .data import getParts
 from .ai import Enemy
+from .items import items
 
 class Tile():
 	def __init__(self, x, y, c="#"):
@@ -28,7 +29,7 @@ class Map():
 		self.generate()
 		self.buildMapModel()
 		self.setNeighors()
-		self.sprinkleEnemies(32)
+		self.sprinkleEnemies()
 
 	def loadParts(self):
 		self.parts = self.game.parts_models
@@ -68,14 +69,44 @@ class Map():
 			print(s)
 
 	def sprinkleEnemies(self, n=8):
+		enemies = [
+			"WORKER", "DRONE_MAIN_A", "ALIEN_A",
+			"DRONE_MAIN_B", "ALIEN_B", "DRONE_SEC", "ALIEN_C",
+			"SWAT", "ALIEN_D", "ALIEN_E"
+		]
+		if self.level%2 == 1:
+			n = 16
+		else:
+			n = 32
 		while len(self.enemies) < n:
 			x = randint(1,self.size-2)
 			y = randint(1,self.size-2)
 			dist_to_start = getDistance([x,y], self.start)
+			level = int(self.level/2)+1
 			if dist_to_start > 5:
 				t = self.grid[y][x]
 				if t.c == "." or t.c == "+":
-					cc = choice(("WORKER", "DRONE_SEC"))
+					if self.level > 1:
+						prev = enemies[level-2]
+					else:
+						prev = enemies[level-1]
+					main = enemies[level-1]
+					new = enemies[level]
+					try:
+						strong = enemies[level+1]
+					except IndexError:
+						strong = enemies[level]
+					if randint(0,1)==0:
+						cc = main
+					elif randint(0,1)==0:
+						cc = new
+					elif randint(0,1)==0:
+						cc = prev
+					elif randint(0,3)==0:
+						cc = strong
+					else:
+						cc = main
+
 					e = Enemy(cc, self, [x,y])
 					self.enemies.append(e)
 					e.load(self.enemy_models)
@@ -98,9 +129,16 @@ class Map():
 			"randomweak", "randommed", "boxcutter", "papercutter"
 		]
 		item_cons = [
-			"softdrink", "snack", "thermos"
+			"softdrink", "snack", "snack", "thermos"
 		]
+
 		seed(self.seed)
+		# change the colors of walls?
+		struct = {}
+		struct["#"] = choice(("WALL", "WALL", "WALL", "WALL_LINES", "WALL_LINES2", "WALL_SQUARES", "WALL_SQUARES2"))
+		struct["="] = "DOOR_WALL"
+		struct["W"] = "WINDOW"
+
 		empty_tile = Tile(0,0, c="")
 		s = len(self.grid)
 		for y,row in enumerate(self.grid):
@@ -108,9 +146,24 @@ class Map():
 				node = NodePath("tile_"+str(x)+"_"+str(y))
 				if tile.c == "+" or tile.c == "." or tile.c == "=":
 					nvm = False
+					dirs = [
+						[-1,0],
+						[0, 1],
+						[1, 0],
+						[0, -1],
+					]
+					for d in dirs:
+						n = self.grid[y-d[1]][x-d[0]]
+						if (n.place[0], n.place[1]) == (self.start[0], self.start[1]):
+							nvm = True
+
 					for neighbor in tile.neighbors:
+						print(start, neighbor.place)
+						if int(neighbor.place[0]) == int(start[0]) and  int(neighbor.place[1]) == int(start[1]):
+							nvm = True
 						if neighbor.c == "<" or neighbor.c == ">":
 							nvm = True
+
 					if tile.c == "+":
 						n = makeInstance(
 							"FLOOR_A", self.parts["FLOOR_WOODEN"],
@@ -121,7 +174,7 @@ class Map():
 							"LIGHT_B", self.parts["LIGHT_B"],
 							(-x,-y,0),((0),0,0))
 						n.reparentTo(node)
-						if randint(0, 2) > 0:
+						if randint(0, 1) == 0:
 							parts = [
 								"DESK_CENTER_A", "TABLE", "DESK_CENTER_B","CHAIRS_CLUSTER"
 							]
@@ -141,29 +194,28 @@ class Map():
 							n.reparentTo(node)
 							tile.c = "$"
 						else:
-							if randint(0, 3) > 0:
+							if randint(0, 2) > 0:
 								todrop = choice(item_cons)
-							elif randint(0, 3) > 0:
-								rr = randExpo(0, len(item_weapons_melee)-1)
-								todrop = item_weapons_melee[rr]
+							elif randint(0, 2) > 0:
+								if randint(0,1) == 0:
+									rr = randExpo(0, len(item_weapons_melee[:self.level])-1)
+									todrop = item_weapons_melee[:self.level][rr]
+								else:
+									rr = randExpo(0, len(item_weapons_melee[:self.level+1])-1)
+									todrop = item_weapons_melee[:self.level+1][rr]
 							else:
-								rr = randExpo(0, len(item_weapons_ranged)-1)
-								todrop = item_weapons_ranged[rr]
+								rr = randExpo(0, len(item_weapons_ranged[:self.level])-1)
+								todrop = item_weapons_ranged[:self.level][rr]
 							n = makeInstance(todrop, self.item_models[todrop], pos=(-x,-y,0))
 							n.reparentTo(node)
 							n.setBillboardPointEye()
-							tile.item = [n, todrop]
-
+							tile.item = [n, items[todrop]()]
 					elif y%2 == 1 and x%2 == 1 and tile.c == ".":
 							n = makeInstance(
 								"LIGHT_A", self.parts["LIGHT_A"],
 								(-x,-y,0),((0),0,0))
 							n.reparentTo(node)
 
-					struct = {}
-					struct["#"] = "WALL"
-					struct["="] = "DOOR_WALL"
-					struct["W"] = "WINDOW"
 					dirs = [
 						[y-1, x],
 						[y, x+1],
@@ -217,6 +269,5 @@ class Map():
 							(-x,-y,0),((-90),0,0))
 						n.reparentTo(node)
 						tile.c = "+"
-
 				node.reparentTo(self.node)
 		self.node.flattenMedium()
